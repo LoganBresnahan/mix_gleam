@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.7.0 - 2026-05-02 (LoganBresnahan fork)
+
+- Replaced deprecated `Tuple.append/2` with explicit tuple construction in
+  `mix gleam.deps.get`. Removes the deprecation warning emitted under
+  Elixir 1.15+ and prepares the task for Elixir 1.19+ where the call would
+  otherwise become an error.
+- Bumped the default `mix gleam.new --retro` template to `gleam_stdlib ~> 1.0`
+  and `gleeunit ~> 1.10`. New scaffolds now target Gleam 1.x out of the box
+  rather than the pre-1.0 line.
+- Bumped the project's own `:elixir` requirement from `~> 1.9` to `~> 1.15`,
+  matching the stated minimum in the README.
+- Released the long-running `0.7.0-dev` version as `0.7.0`.
+
+This release ships from a community fork while upstream
+`gleam-lang/mix_gleam` is in maintenance mode. Behavior is otherwise
+identical to upstream `0.7.0-dev` (which was 6 cosmetic commits ahead of
+upstream `0.6.2`).
+
 ## v0.6.2 - 2023-11-16
 
 - Updated for Elixir v1.15 and Gleam v0.32 compatibility. Make sure to set

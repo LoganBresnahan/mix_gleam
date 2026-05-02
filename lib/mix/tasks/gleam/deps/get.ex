@@ -47,7 +47,9 @@ defmodule Mix.Tasks.Gleam.Deps.Get do
               dev_deps =
                 Map.get(config, :"dev-dependencies", %{})
                 |> Map.to_list()
-                |> Enum.map(&Tuple.append(&1, only: [:dev, :test], runtime: false))
+                |> Enum.map(fn {dep, version} ->
+                  {dep, version, only: [:dev, :test], runtime: false}
+                end)
 
               deps = deps ++ dev_deps
               # TODO use eex template

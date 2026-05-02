@@ -4,8 +4,8 @@ defmodule MixGleam.MixProject do
   def project do
     [
       app: :mix_gleam,
-      version: "0.7.0-dev",
-      elixir: "~> 1.9",
+      version: "0.7.0",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       name: "mix_gleam",
       description: "Compile Gleam code with mix",

@@ -8,25 +8,35 @@
 An Elixir archive that teaches `Mix` how to work with Gleam code and
 dependencies!
 
+> **About this fork.** This is a maintenance fork of [`gleam-lang/mix_gleam`](https://github.com/gleam-lang/mix_gleam),
+> which has been in low-activity maintenance mode since the v0.6.2 release in
+> November 2023. The fork keeps the archive working with current Elixir
+> (1.15+, including 1.19) and current Gleam (1.x) by applying small
+> compatibility patches as needed. See [CHANGELOG.md](CHANGELOG.md) for the
+> exact divergence from upstream.
+
 ## Installation
 
 Install the Gleam compiler onto your machine.
 [Installation instructions can be found here](https://gleam.run/install).
 
-Install or update the `MixGleam` archive from Hex:
+Install or update the `MixGleam` archive from this fork:
 
 ```shell
-$ mix archive.install hex mix_gleam
+$ mix archive.install --force github LoganBresnahan/mix_gleam
 ```
 
-To install or update from source:
+Or, equivalently, from a local clone:
 
 ```shell
-$ mix archive.uninstall mix_gleam # if this archive was previously installed
-$ git clone https://github.com/gleam-lang/mix_gleam.git
+$ mix archive.uninstall mix_gleam   # if this archive was previously installed
+$ git clone https://github.com/LoganBresnahan/mix_gleam.git
 $ cd mix_gleam
 $ MIX_ENV=prod mix do archive.build, archive.install
 ```
+
+The original Hex package is still available at
+`mix archive.install hex mix_gleam` but pins to v0.6.2.
 
 Configure your `Mix` project to use the `MixGleam` archive to work with Gleam's
 compiler and Gleam dependencies:
