@@ -138,32 +138,67 @@ defmodule Mix.Tasks.Compile.Gleam do
       # A minimal `gleam.toml` config with a project name is required by
       # `gleam compile-package`.
       #
-      # We create one here if necessary, in Mix's build directory rather than
-      # the project's base directory (to avoid invoking Gleam's language
-      # server).
+      # `gleam compile-package` has no per-subdirectory exclusion flag — it
+      # compiles every `.gleam` file under the package directory. To keep
+      # `test/` files out of the `:prod` build (where `gleeunit` is excluded
+      # via `only: [:dev, :test]` and `should` is unresolvable, breaking
+      # `mix release`), we always route `:prod` through a parallel package
+      # directory under `_build/` that contains only `src/` and a copy of
+      # `gleam.toml`.
       #
+      # Outside `:prod`, behavior is unchanged: when no `gleam.toml` exists
+      # at the project root, a minimal one is written into the build dir
+      # alongside symlinks to `src/` and `test/`. When a `gleam.toml` does
+      # exist at the project root, the project root itself is used directly
+      # so the user's authoritative config (deps, target, name) is honored.
       package =
-        unless File.regular?("gleam.toml") do
-          config = Path.join(build, "gleam.toml")
+        cond do
+          Mix.env() == :prod ->
+            config = Path.join(build, "gleam.toml")
 
-          unless File.regular?(config) do
-            File.write!(config, ~s(name = "#{app}"))
-          end
-
-          ["src", "test"]
-          |> Enum.each(fn dir ->
-            src = Path.absname(dir)
-            dest = Path.join(build, dir)
-            File.rm_rf!(dest)
-
-            if File.ln_s(src, dest) != :ok do
-              File.cp_r!(src, dest)
+            if File.regular?("gleam.toml") do
+              File.cp!("gleam.toml", config)
+            else
+              File.write!(config, ~s(name = "#{app}"))
             end
-          end)
 
-          build
-        else
-          "."
+            ["src", "test"]
+            |> Enum.each(fn dir ->
+              src = Path.absname(dir)
+              dest = Path.join(build, dir)
+              File.rm_rf!(dest)
+
+              if dir == "src" do
+                if File.ln_s(src, dest) != :ok do
+                  File.cp_r!(src, dest)
+                end
+              end
+            end)
+
+            build
+
+          File.regular?("gleam.toml") ->
+            "."
+
+          true ->
+            config = Path.join(build, "gleam.toml")
+
+            unless File.regular?(config) do
+              File.write!(config, ~s(name = "#{app}"))
+            end
+
+            ["src", "test"]
+            |> Enum.each(fn dir ->
+              src = Path.absname(dir)
+              dest = Path.join(build, dir)
+              File.rm_rf!(dest)
+
+              if File.ln_s(src, dest) != :ok do
+                File.cp_r!(src, dest)
+              end
+            end)
+
+            build
         end
 
       File.rm_rf!(out)
