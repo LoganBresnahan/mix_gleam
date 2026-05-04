@@ -31,7 +31,14 @@ defmodule Mix.Tasks.Gleam.Test do
   def run(_args) do
     MixGleam.IO.debug_info("Test Start")
 
-    # TODO warn Mix.env()
+    # Force :test env so deps marked `only: [:dev, :test]` resolve and
+    # any project config gated on Mix.env() (e.g. test-only logger
+    # routing or application start hooks) takes effect. mix's built-in
+    # `mix test` does the same. Skipping this leaves Mix.env() at :dev
+    # by default, which breaks consumers that rely on env-aware config.
+    if Mix.env() != :test do
+      Mix.env(:test)
+    end
 
     app =
       Mix.Project.config()
